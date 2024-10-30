@@ -1,7 +1,7 @@
 let originalData = [];
 
 // Fetch data from the JSON file
-fetch('sample.json')
+fetch('https://marque6299.github.io/OneReport/sample.json')
   .then(response => response.json())
   .then(data => {
     originalData = data.sample;
