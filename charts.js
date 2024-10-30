@@ -1,5 +1,5 @@
 // Fetch data from external JSON file
-fetch('sample.json')
+fetch('https://marque6299.github.io/OneReport/sample.json')
   .then(response => response.json())
   .then(data => {
     // Extract names and AHT values for column chart
