@@ -24,7 +24,7 @@ fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
         // Chart setup
         const ctx = document.getElementById('ahtChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
