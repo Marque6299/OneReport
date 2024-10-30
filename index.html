@@ -9,7 +9,14 @@
   <link rel="stylesheet" href="https://marque6299.github.io/OneReport/styles.css">
 </head>
 <body>
-
+   <!-- Dropdown Filter for Names -->
+  <div id="filterContainer">
+    <label for="nameFilter">Select Name(s):</label>
+    <select id="nameFilter" multiple>
+      <!-- Options will be populated dynamically -->
+    </select>
+  </div>
+  
   <!-- Column Chart for AHT Comparison -->
   <div id="chartContainer">
     <canvas id="ahtChart"></canvas>
