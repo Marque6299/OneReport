@@ -13,8 +13,9 @@ body {
 }
 
 #chartContainer, #gaugeContainer {
-  width: 80%;
-  margin-top: 20px;
+  width: 50%;
+  margin-top: 10px;
+  align-items: center;
 }
 
 canvas {
