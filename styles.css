@@ -1,0 +1,18 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#chartContainer {
+  width: 50%;
+}
+
+#gaugeContainer {
+  width: 30%;
+}
