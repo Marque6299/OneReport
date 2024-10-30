@@ -5,12 +5,12 @@ fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
         // Calculate daily total talk time and handle count
         const dailyData = data.raw.reduce((acc, entry) => {
             const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
-            const talkTime = entry.AHT * entry.["Handle Count"]; // Total Talk Time per entry
+            const talkTime = entry.AHT * entry["Handle Count"]; // Total Talk Time per entry
             if (!acc[date]) {
                 acc[date] = { totalTalkTime: 0, totalHandleCount: 0 };
             }
             acc[date].totalTalkTime += talkTime;
-            acc[date].totalHandleCount += entry.["Handle Count"];
+            acc[date].totalHandleCount += entry["Handle Count"];
             return acc;
         }, {});
 
