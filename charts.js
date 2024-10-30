@@ -2,18 +2,23 @@
 fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
     .then(response => response.json())
     .then(data => {
-        // Extract Date and AHT for daily values
-        const dailyAHTData = data.raw.reduce((acc, entry) => {
+        // Calculate daily total talk time and handle count
+        const dailyData = data.raw.reduce((acc, entry) => {
             const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
-            acc[date] = (acc[date] || []).concat(entry.AHT);
+            const talkTime = entry.AHT * entry.Handle Count; // Total Talk Time per entry
+            if (!acc[date]) {
+                acc[date] = { totalTalkTime: 0, totalHandleCount: 0 };
+            }
+            acc[date].totalTalkTime += talkTime;
+            acc[date].totalHandleCount += entry.Handle Count;
             return acc;
         }, {});
 
-        // Average the AHT values per day
-        const labels = Object.keys(dailyAHTData);
+        // Calculate average AHT per day
+        const labels = Object.keys(dailyData);
         const dailyAHT = labels.map(date => {
-            const values = dailyAHTData[date];
-            return values.reduce((sum, aht) => sum + aht, 0) / values.length;
+            const { totalTalkTime, totalHandleCount } = dailyData[date];
+            return totalTalkTime / totalHandleCount; // Average AHT for the day
         });
 
         // Chart setup
