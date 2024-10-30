@@ -120,6 +120,6 @@ function updateChart(data) {
                 }
             }
         },
-        plugins: [ChartDataLabels] // Initialize ChartDataLabels plugin
+        plugins: [ChartDataLabels] // Initialize ChartDataLabels
     });
 }
