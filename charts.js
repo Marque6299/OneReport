@@ -21,7 +21,7 @@ function setupFilters() {
         const selectedDimension = this.value;
 
         if (selectedDimension) {
-            // Get unique values for the selected dimension and sort them A-Z
+            // Populate secondary filter based on selected dimension and sort values
             const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))].sort();
             valueFilter.innerHTML = `<option value="">Select ${selectedDimension}</option>`;
             uniqueValues.forEach(value => {
@@ -61,19 +61,19 @@ function setupFilters() {
 function updateChart(data) {
     const dailyData = data.reduce((acc, entry) => {
         const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
-        const score = entry.AHT * entry["Handle Count"]; // Calculate score as needed
+        const talkTime = entry.AHT * entry["Handle Count"];
         if (!acc[date]) {
-            acc[date] = { totalScore: 0, totalHandleCount: 0 };
+            acc[date] = { totalTalkTime: 0, totalHandleCount: 0 };
         }
-        acc[date].totalScore += score;
+        acc[date].totalTalkTime += talkTime;
         acc[date].totalHandleCount += entry["Handle Count"];
         return acc;
     }, {});
 
     const labels = Object.keys(dailyData);
-    const dailyScores = labels.map(date => {
-        const { totalScore, totalHandleCount } = dailyData[date];
-        return totalHandleCount ? totalScore / totalHandleCount : 0; // Use score calculation logic here
+    const dailyAHT = labels.map(date => {
+        const { totalTalkTime, totalHandleCount } = dailyData[date];
+        return totalHandleCount ? totalTalkTime / totalHandleCount : 0;
     });
 
     // Destroy existing chart instance if it exists to avoid duplication
@@ -85,8 +85,8 @@ function updateChart(data) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Score',
-                data: dailyScores,
+                label: 'Average Handling Time (AHT)',
+                data: dailyAHT,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
@@ -94,6 +94,17 @@ function updateChart(data) {
         },
         options: {
             responsive: true,
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    color: '#333',
+                    font: {
+                        weight: 'bold'
+                    },
+                    formatter: (value) => value.toFixed(2)
+                }
+            },
             scales: {
                 x: {
                     title: {
@@ -104,10 +115,11 @@ function updateChart(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Score'
+                        text: 'Average AHT (seconds)'
                     }
                 }
             }
-        }
+        },
+        plugins: [ChartDataLabels] // Initialize ChartDataLabels plugin
     });
 }
