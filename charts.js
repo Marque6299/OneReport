@@ -102,7 +102,7 @@ function updateChart(data) {
                     font: {
                         weight: 'bold'
                     },
-                    formatter: (value) => value.toFixed(2)
+                    formatter: (value) => value.toFixed(0)
                 }
             },
             scales: {
