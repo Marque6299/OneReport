@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  display: grid;
+  display: inline-block;
   flex-direction: column;
   align-items: center;
   padding: 20px;
