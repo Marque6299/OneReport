@@ -1,7 +1,7 @@
 let originalData = [];
 
-// Fetch data from the JSON file hosted on GitHub Pages
-fetch('https://marque6299.github.io/OneReport/sample.json')
+// Fetch data from the JSON file
+fetch('sample.json')
   .then(response => response.json())
   .then(data => {
     originalData = data.sample;
@@ -30,11 +30,9 @@ document.getElementById('nameFilter').addEventListener('change', () => {
 
 // Update both charts based on filtered data
 function updateCharts(data) {
-  // Extract names and AHT values
   const names = data.map(entry => entry.GM);
   const ahtValues = data.map(entry => entry.AHT);
 
-  // Calculate average FCR%
   const fcrValues = data.map(entry => entry["FCR %"]);
   const averageFcr = (fcrValues.reduce((a, b) => a + b, 0) / fcrValues.length) * 100;
 
