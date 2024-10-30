@@ -1,33 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Visualization</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://marque6299.github.io/OneReport/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily AHT Line Chart</title>
+    <link rel="stylesheet" href="https://marque6299.github.io/OneReport/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-  <!-- Dropdown Filter for Names -->
-  <div id="filterContainer">
-    <label for="nameFilter">Select Name(s):</label>
-    <select id="nameFilter" multiple>
-      <!-- Options populated dynamically -->
-    </select>
-  </div>
-
-  <!-- Column Chart for AHT Comparison -->
-  <div id="chartContainer">
-    <canvas id="ahtChart"></canvas>
-  </div>
-
-  <!-- Gauge Chart for Average FCR% -->
-  <div id="gaugeContainer">
-    <canvas id="fcrGauge"></canvas>
-  </div>
-
-  <!-- Link to the external JavaScript file -->
-  <script src="https://marque6299.github.io/OneReport/charts.js"></script>
+    <div class="container">
+        <canvas id="ahtChart"></canvas>
+    </div>
+    <script src="https://marque6299.github.io/OneReport/charts.js"></script>
 </body>
 </html>

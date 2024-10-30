@@ -1,36 +1,14 @@
 body {
   font-family: Arial, sans-serif;
-  display: inline-block;
-  flex-direction: column;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
+  height: 100vh;
+  margin: 0;
   background-color: #f4f4f9;
 }
 
-#filterContainer {
-  margin-bottom: 20px;
-}
-
-#chartContainer, #gaugeContainer {
-  width: 50%;
-  margin-top: 10px;
-  
-}
-
-canvas {
-  max-width: 50%;
-  height: auto;
-}
-
-label {
-  font-weight: bold;
-}
-
-select {
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 200px;
+.container {
+  width: 80%;
+  max-width: 800px;
 }

@@ -1,105 +1,56 @@
-let originalData = [];
-let ahtChart = null;
-let fcrGauge = null;
+// Fetch data from external JSON file
+fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
+    .then(response => response.json())
+    .then(data => {
+        // Extract Date and AHT for daily values
+        const dailyAHTData = data.raw.reduce((acc, entry) => {
+            const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
+            acc[date] = (acc[date] || []).concat(entry.AHT);
+            return acc;
+        }, {});
 
-// Fetch data from the JSON file
-fetch('sample.json')
-  .then(response => response.json())
-  .then(data => {
-    originalData = data.sample;
-    populateDropdown(originalData);
-    updateCharts(originalData);
-  })
-  .catch(error => console.error('Error loading the JSON file:', error));
+        // Average the AHT values per day
+        const labels = Object.keys(dailyAHTData);
+        const dailyAHT = labels.map(date => {
+            const values = dailyAHTData[date];
+            return values.reduce((sum, aht) => sum + aht, 0) / values.length;
+        });
 
-// Populate the dropdown with names
-function populateDropdown(data) {
-  const dropdown = document.getElementById('nameFilter');
-  data.forEach(entry => {
-    const option = document.createElement('option');
-    option.value = entry.GM;
-    option.textContent = entry.GM;
-    dropdown.appendChild(option);
-  });
-}
-
-// Update charts when dropdown selection changes
-document.getElementById('nameFilter').addEventListener('change', () => {
-  const selectedNames = Array.from(document.getElementById('nameFilter').selectedOptions).map(option => option.value);
-  const filteredData = selectedNames.length ? originalData.filter(entry => selectedNames.includes(entry.GM)) : originalData;
-  updateCharts(filteredData);
-});
-
-// Update both charts based on filtered data
-function updateCharts(data) {
-  const names = data.map(entry => entry.GM);
-  const ahtValues = data.map(entry => entry.AHT);
-
-  const fcrValues = data.map(entry => entry["FCR %"]);
-  const averageFcr = (fcrValues.reduce((a, b) => a + b, 0) / fcrValues.length) * 100;
-
-  // Update AHT Column Chart
-  if (ahtChart) {
-    ahtChart.destroy();
-  }
-  const ahtChartCtx = document.getElementById('ahtChart').getContext('2d');
-  ahtChart = new Chart(ahtChartCtx, {
-    type: 'bar',
-    data: {
-      labels: names,
-      datasets: [{
-        label: 'AHT',
-        data: ahtValues,
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: 'AHT (in seconds)' }
-        },
-        x: {
-          title: { display: true, text: 'Names' }
-        }
-      },
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
-
-  // Update FCR Gauge Chart
-  if (fcrGauge) {
-    fcrGauge.destroy();
-  }
-  const gaugeCtx = document.getElementById('fcrGauge').getContext('2d');
-  fcrGauge = new Chart(gaugeCtx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Average FCR%', 'Remaining'],
-      datasets: [{
-        data: [averageFcr, 100 - averageFcr],
-        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(200, 200, 200, 0.2)'],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      circumference: 180,
-      rotation: -90,
-      cutout: '70%',
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false },
-        title: {
-          display: true,
-          text: `Average FCR%: ${averageFcr.toFixed(2)}%`
-        }
-      }
-    }
-  });
-}
+        // Chart setup
+        const ctx = document.getElementById('ahtChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Average Handling Time (AHT)',
+                    data: dailyAHT,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    pointRadius: 3,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Average AHT (seconds)'
+                        }
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Error fetching the JSON data:', error));
