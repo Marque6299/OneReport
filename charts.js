@@ -21,8 +21,8 @@ function setupFilters() {
         const selectedDimension = this.value;
 
         if (selectedDimension) {
-            // Populate secondary filter based on selected dimension
-            const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))];
+            // Get unique values for the selected dimension and sort them A-Z
+            const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))].sort();
             valueFilter.innerHTML = `<option value="">Select ${selectedDimension}</option>`;
             uniqueValues.forEach(value => {
                 valueFilter.innerHTML += `<option value="${value}">${value}</option>`;
@@ -61,19 +61,19 @@ function setupFilters() {
 function updateChart(data) {
     const dailyData = data.reduce((acc, entry) => {
         const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
-        const talkTime = entry.AHT * entry["Handle Count"];
+        const score = entry.AHT * entry["Handle Count"]; // Calculate score as needed
         if (!acc[date]) {
-            acc[date] = { totalTalkTime: 0, totalHandleCount: 0 };
+            acc[date] = { totalScore: 0, totalHandleCount: 0 };
         }
-        acc[date].totalTalkTime += talkTime;
+        acc[date].totalScore += score;
         acc[date].totalHandleCount += entry["Handle Count"];
         return acc;
     }, {});
 
     const labels = Object.keys(dailyData);
-    const dailyAHT = labels.map(date => {
-        const { totalTalkTime, totalHandleCount } = dailyData[date];
-        return totalHandleCount ? totalTalkTime / totalHandleCount : 0;
+    const dailyScores = labels.map(date => {
+        const { totalScore, totalHandleCount } = dailyData[date];
+        return totalHandleCount ? totalScore / totalHandleCount : 0; // Use score calculation logic here
     });
 
     // Destroy existing chart instance if it exists to avoid duplication
@@ -85,8 +85,8 @@ function updateChart(data) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Average Handling Time (AHT)',
-                data: dailyAHT,
+                label: 'Score',
+                data: dailyScores,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
@@ -104,7 +104,7 @@ function updateChart(data) {
                 y: {
                     title: {
                         display: true,
-                        text: 'Average AHT (seconds)'
+                        text: 'Score'
                     }
                 }
             }
