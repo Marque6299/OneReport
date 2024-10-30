@@ -1,7 +1,9 @@
 let originalData = [];
+let ahtChart = null;
+let fcrGauge = null;
 
 // Fetch data from the JSON file
-fetch('https://marque6299.github.io/OneReport/sample.json')
+fetch('sample.json')
   .then(response => response.json())
   .then(data => {
     originalData = data.sample;
@@ -37,9 +39,11 @@ function updateCharts(data) {
   const averageFcr = (fcrValues.reduce((a, b) => a + b, 0) / fcrValues.length) * 100;
 
   // Update AHT Column Chart
-  if (window.ahtChart) window.ahtChart.destroy();
+  if (ahtChart) {
+    ahtChart.destroy();
+  }
   const ahtChartCtx = document.getElementById('ahtChart').getContext('2d');
-  window.ahtChart = new Chart(ahtChartCtx, {
+  ahtChart = new Chart(ahtChartCtx, {
     type: 'bar',
     data: {
       labels: names,
@@ -69,9 +73,11 @@ function updateCharts(data) {
   });
 
   // Update FCR Gauge Chart
-  if (window.fcrGauge) window.fcrGauge.destroy();
+  if (fcrGauge) {
+    fcrGauge.destroy();
+  }
   const gaugeCtx = document.getElementById('fcrGauge').getContext('2d');
-  window.fcrGauge = new Chart(gaugeCtx, {
+  fcrGauge = new Chart(gaugeCtx, {
     type: 'doughnut',
     data: {
       labels: ['Average FCR%', 'Remaining'],
