@@ -12,3 +12,10 @@ body {
   width: 80%;
   max-width: 800px;
 }
+
+.filter-container {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}

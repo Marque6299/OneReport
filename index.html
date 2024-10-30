@@ -3,12 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily AHT Line Chart</title>
+    <title>Dynamic AHT Bar Chart with Filters</title>
     <link rel="stylesheet" href="https://marque6299.github.io/OneReport/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
+        <div class="filter-container">
+            <label for="dimensionFilter">Dimension Filter:</label>
+            <select id="dimensionFilter">
+                <option value="">Select Dimension</option>
+                <option value="Agent Name">Agent Name</option>
+                <option value="Location">Location</option>
+                <option value="AM">AM</option>
+                <option value="DM">DM</option>
+                <option value="GM">GM</option>
+                <option value="Group">Group</option>
+                <option value="Sub-Group">Sub-Group</option>
+            </select>
+
+            <label for="valueFilter" id="valueFilterLabel" style="display:none;">Value Filter:</label>
+            <select id="valueFilter" style="display:none;"></select>
+        </div>
         <canvas id="ahtChart"></canvas>
     </div>
     <script src="https://marque6299.github.io/OneReport/charts.js"></script>
