@@ -1,4 +1,3 @@
-let chart1, chart2;
 let originalData;
 
 // Get the first and last date of the current month
@@ -18,7 +17,7 @@ fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
         const { startDate, endDate } = getDefaultDateRange();
         document.getElementById('startDate').value = startDate;
         document.getElementById('endDate').value = endDate;
-        updateCharts(filterDataByDateRange(originalData, startDate, endDate)); // Initial chart display
+        updateChart(filterDataByDateRange(originalData, startDate, endDate)); // Initial chart display
     })
     .catch(error => console.error('Error fetching the JSON data:', error));
 
@@ -35,10 +34,11 @@ function setupFilters() {
         const selectedDimension = this.value;
 
         if (selectedDimension) {
+            // Populate and sort secondary filter values
             const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))].sort();
-            valueFilter.innerHTML = `<option value="">Select ${selectedDimension}</option>`;
+            valueFilter.innerHTML = <option value="">Select ${selectedDimension}</option>;
             uniqueValues.forEach(value => {
-                valueFilter.innerHTML += `<option value="${value}">${value}</option>`;
+                valueFilter.innerHTML += <option value="${value}">${value}</option>;
             });
 
             // Show secondary filter
@@ -50,18 +50,20 @@ function setupFilters() {
             valueFilterLabel.style.display = 'none';
         }
 
-        // Reset secondary filter selection and update charts
+        // Reset secondary filter selection and update chart
         valueFilter.value = "";
         applyFilters();
     });
 
-    // Event listeners for filters
+    // Event listener for value filter
     valueFilter.addEventListener('change', applyFilters);
+
+    // Event listeners for date range filters
     startDateInput.addEventListener('change', applyFilters);
     endDateInput.addEventListener('change', applyFilters);
 }
 
-// Apply all filters and update the charts
+// Apply all filters and update the chart
 function applyFilters() {
     const dimensionFilter = document.getElementById('dimensionFilter').value;
     const valueFilter = document.getElementById('valueFilter').value;
@@ -78,7 +80,7 @@ function applyFilters() {
     // Filter by date range
     filteredData = filterDataByDateRange(filteredData, startDate, endDate);
 
-    updateCharts(filteredData);
+    updateChart(filteredData);
 }
 
 // Filter data by selected date range
@@ -89,38 +91,8 @@ function filterDataByDateRange(data, startDate, endDate) {
     });
 }
 
-// Function to update the charts and display split scores
-function updateCharts(data) {
-    const subGroups = ["Sub-Group 1", "Sub-Group 2"];
-    const splitData = subGroups.map(subGroup => data.filter(item => item["Sub-Group"] === subGroup));
-
-    // Calculate total AHT and split AHT for each Sub-Group
-    const totalAHT = calculateAHT(data);
-    const subgroupAHT = splitData.map(calculateAHT);
-
-    document.getElementById('totalAHT').textContent = totalAHT.toFixed(2);
-    document.getElementById('subgroup1AHT').textContent = subgroupAHT[0].toFixed(2);
-    document.getElementById('subgroup2AHT').textContent = subgroupAHT[1].toFixed(2);
-
-    // Update each Sub-Group chart
-    createChart('ahtChartSubGroup1', splitData[0], "Sub-Group 1 AHT");
-    createChart('ahtChartSubGroup2', splitData[1], "Sub-Group 2 AHT");
-}
-
-// Function to calculate AHT for a given dataset
-function calculateAHT(data) {
-    const { totalTalkTime, totalHandleCount } = data.reduce((acc, entry) => {
-        const talkTime = entry.AHT * entry["Handle Count"];
-        acc.totalTalkTime += talkTime;
-        acc.totalHandleCount += entry["Handle Count"];
-        return acc;
-    }, { totalTalkTime: 0, totalHandleCount: 0 });
-
-    return totalHandleCount ? totalTalkTime / totalHandleCount : 0;
-}
-
-// Function to create and display a chart
-function createChart(canvasId, data, label) {
+// Function to update the chart with filtered data
+function updateChart(data) {
     const dailyData = data.reduce((acc, entry) => {
         const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
         const talkTime = entry.AHT * entry["Handle Count"];
@@ -139,16 +111,15 @@ function createChart(canvasId, data, label) {
     });
 
     // Destroy existing chart instance if it exists to avoid duplication
-    if (chart1 && canvasId === 'ahtChartSubGroup1') chart1.destroy();
-    if (chart2 && canvasId === 'ahtChartSubGroup2') chart2.destroy();
+    if (chart) chart.destroy();
 
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    const newChart = new Chart(ctx, {
+    const ctx = document.getElementById('ahtChart').getContext('2d');
+    chart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: label,
+                label: 'Average Handling Time (AHT)',
                 data: dailyAHT,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
@@ -183,10 +154,6 @@ function createChart(canvasId, data, label) {
                 }
             }
         },
-        plugins: [ChartDataLabels]
+        plugins: [ChartDataLabels] // Initialize ChartDataLabels plugin
     });
-
-    // Assign the chart to the appropriate variable
-    if (canvasId === 'ahtChartSubGroup1') chart1 = newChart;
-    if (canvasId === 'ahtChartSubGroup2') chart2 = newChart;
 }
