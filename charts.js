@@ -131,11 +131,18 @@ function updateChart(data) {
             responsive: true,
             plugins: {
                 datalabels: {
-                    anchor: 'end',
-                    align: 'end',
+                    anchor: 'center',
+                    align: 'center',
                     color: '#333',
                     font: {
-                        weight: 'bold'
+                        size: (context) => {
+                            const barWidth = context.chart.width / context.chart.data.labels.length;
+                            return barWidth > 30 ? 14 : barWidth / 2;  // Autofit font size based on bar width
+                        }
+                    },
+                    rotation: (context) => {
+                        const barWidth = context.chart.width / context.chart.data.labels.length;
+                        return barWidth > 30 ? 0 : 90; // Rotate 90 degrees if bar is narrow
                     },
                     formatter: (value) => value.toFixed(2)
                 }
