@@ -1,4 +1,4 @@
-let chart;
+let chart1, chart2;
 let originalData;
 
 // Get the first and last date of the current month
@@ -18,7 +18,7 @@ fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
         const { startDate, endDate } = getDefaultDateRange();
         document.getElementById('startDate').value = startDate;
         document.getElementById('endDate').value = endDate;
-        updateChart(filterDataByDateRange(originalData, startDate, endDate)); // Initial chart display
+        updateCharts(filterDataByDateRange(originalData, startDate, endDate)); // Initial chart display
     })
     .catch(error => console.error('Error fetching the JSON data:', error));
 
@@ -35,7 +35,6 @@ function setupFilters() {
         const selectedDimension = this.value;
 
         if (selectedDimension) {
-            // Populate and sort secondary filter values
             const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))].sort();
             valueFilter.innerHTML = `<option value="">Select ${selectedDimension}</option>`;
             uniqueValues.forEach(value => {
@@ -51,20 +50,18 @@ function setupFilters() {
             valueFilterLabel.style.display = 'none';
         }
 
-        // Reset secondary filter selection and update chart
+        // Reset secondary filter selection and update charts
         valueFilter.value = "";
         applyFilters();
     });
 
-    // Event listener for value filter
+    // Event listeners for filters
     valueFilter.addEventListener('change', applyFilters);
-
-    // Event listeners for date range filters
     startDateInput.addEventListener('change', applyFilters);
     endDateInput.addEventListener('change', applyFilters);
 }
 
-// Apply all filters and update the chart
+// Apply all filters and update the charts
 function applyFilters() {
     const dimensionFilter = document.getElementById('dimensionFilter').value;
     const valueFilter = document.getElementById('valueFilter').value;
@@ -81,7 +78,7 @@ function applyFilters() {
     // Filter by date range
     filteredData = filterDataByDateRange(filteredData, startDate, endDate);
 
-    updateChart(filteredData);
+    updateCharts(filteredData);
 }
 
 // Filter data by selected date range
@@ -92,8 +89,38 @@ function filterDataByDateRange(data, startDate, endDate) {
     });
 }
 
-// Function to update the chart with filtered data
-function updateChart(data) {
+// Function to update the charts and display split scores
+function updateCharts(data) {
+    const subGroups = ["Sub-Group 1", "Sub-Group 2"];
+    const splitData = subGroups.map(subGroup => data.filter(item => item["Sub-Group"] === subGroup));
+
+    // Calculate total AHT and split AHT for each Sub-Group
+    const totalAHT = calculateAHT(data);
+    const subgroupAHT = splitData.map(calculateAHT);
+
+    document.getElementById('totalAHT').textContent = totalAHT.toFixed(2);
+    document.getElementById('subgroup1AHT').textContent = subgroupAHT[0].toFixed(2);
+    document.getElementById('subgroup2AHT').textContent = subgroupAHT[1].toFixed(2);
+
+    // Update each Sub-Group chart
+    createChart('ahtChartSubGroup1', splitData[0], "Sub-Group 1 AHT");
+    createChart('ahtChartSubGroup2', splitData[1], "Sub-Group 2 AHT");
+}
+
+// Function to calculate AHT for a given dataset
+function calculateAHT(data) {
+    const { totalTalkTime, totalHandleCount } = data.reduce((acc, entry) => {
+        const talkTime = entry.AHT * entry["Handle Count"];
+        acc.totalTalkTime += talkTime;
+        acc.totalHandleCount += entry["Handle Count"];
+        return acc;
+    }, { totalTalkTime: 0, totalHandleCount: 0 });
+
+    return totalHandleCount ? totalTalkTime / totalHandleCount : 0;
+}
+
+// Function to create and display a chart
+function createChart(canvasId, data, label) {
     const dailyData = data.reduce((acc, entry) => {
         const date = new Date((entry.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
         const talkTime = entry.AHT * entry["Handle Count"];
@@ -112,15 +139,16 @@ function updateChart(data) {
     });
 
     // Destroy existing chart instance if it exists to avoid duplication
-    if (chart) chart.destroy();
+    if (chart1 && canvasId === 'ahtChartSubGroup1') chart1.destroy();
+    if (chart2 && canvasId === 'ahtChartSubGroup2') chart2.destroy();
 
-    const ctx = document.getElementById('ahtChart').getContext('2d');
-    chart = new Chart(ctx, {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    const newChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Average Handling Time (AHT)',
+                label: label,
                 data: dailyAHT,
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
@@ -135,17 +163,7 @@ function updateChart(data) {
                     align: 'end',
                     color: '#333',
                     font: {
-                        size: (context) => {
-                            const barWidth = context.chart.scales.x.getPixelForTick(context.dataIndex + 1) - 
-                                             context.chart.scales.x.getPixelForTick(context.dataIndex);
-                            return barWidth > 30 ? 12 : Math.max(8, barWidth * 0.4); // Adjust size dynamically
-                        },
                         weight: 'bold'
-                    },
-                    rotation: (context) => {
-                        const barWidth = context.chart.scales.x.getPixelForTick(context.dataIndex + 1) - 
-                                         context.chart.scales.x.getPixelForTick(context.dataIndex);
-                        return barWidth > 30 ? 0 : 90; // Rotate 90 degrees if bar width is too small
                     },
                     formatter: (value) => value.toFixed(2)
                 }
@@ -165,6 +183,10 @@ function updateChart(data) {
                 }
             }
         },
-        plugins: [ChartDataLabels] // Initialize ChartDataLabels plugin
+        plugins: [ChartDataLabels]
     });
+
+    // Assign the chart to the appropriate variable
+    if (canvasId === 'ahtChartSubGroup1') chart1 = newChart;
+    if (canvasId === 'ahtChartSubGroup2') chart2 = newChart;
 }

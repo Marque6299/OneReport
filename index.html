@@ -10,8 +10,24 @@
 </head>
 <body>
     <div class="container">
+        <!-- AHT Summary Card -->
+        <div id="ahtCard" class="card">
+            <h3>Total AHT</h3>
+            <p id="totalAHT">0</p>
+            <div class="split-container">
+                <div class="subgroup">
+                    <h4>Sub-Group 1</h4>
+                    <p id="subgroup1AHT">0</p>
+                </div>
+                <div class="subgroup">
+                    <h4>Sub-Group 2</h4>
+                    <p id="subgroup2AHT">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Chart Elements -->
         <div class="filter-container">
-            <!-- Dimension and Value Filters -->
             <label for="dimensionFilter">Dimension Filter:</label>
             <select id="dimensionFilter">
                 <option value="">Select Dimension</option>
@@ -27,13 +43,17 @@
             <label for="valueFilter" id="valueFilterLabel" style="display:none;">Value Filter:</label>
             <select id="valueFilter" style="display:none;"></select>
 
-            <!-- Date Range Filters -->
             <label for="startDate">Start Date:</label>
             <input type="date" id="startDate">
             <label for="endDate">Until:</label>
             <input type="date" id="endDate">
         </div>
-        <canvas id="ahtChart"></canvas>
+
+        <!-- Two Canvas Elements for Split Charts -->
+        <div class="chart-container">
+            <canvas id="ahtChartSubGroup1"></canvas>
+            <canvas id="ahtChartSubGroup2"></canvas>
+        </div>
     </div>
     <script src="https://marque6299.github.io/OneReport/charts.js"></script>
 </body>

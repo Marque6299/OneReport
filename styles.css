@@ -3,14 +3,32 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   margin: 0;
   background-color: #f4f4f9;
+  flex-direction: column;
 }
 
 .container {
   width: 80%;
-  max-width: 800px;
+  max-width: 1000px;
+}
+
+.card {
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.split-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.subgroup {
+  flex: 1;
 }
 
 .filter-container {
@@ -18,4 +36,14 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.chart-container {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+}
+
+canvas {
+  max-width: 450px;
 }
