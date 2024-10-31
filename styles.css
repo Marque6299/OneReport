@@ -67,11 +67,12 @@ select:focus, input[type="date"]:focus {
 }
 
 #ahtChart {
-  max-height: 500px;
+  max-height: 100px;
+  max-width: 250px;
 }
 
 @media (max-width: 768px) {
   .filter-container .row {
-      flex-direction: column;
+      flex-direction: column row;
   }
 }
