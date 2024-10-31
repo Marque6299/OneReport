@@ -131,18 +131,21 @@ function updateChart(data) {
             responsive: true,
             plugins: {
                 datalabels: {
-                    anchor: 'center',
-                    align: 'center',
+                    anchor: 'end',
+                    align: 'end',
                     color: '#333',
                     font: {
                         size: (context) => {
-                            const barWidth = context.chart.width / context.chart.data.labels.length;
-                            return barWidth > 30 ? 14 : barWidth / 2;  // Autofit font size based on bar width
-                        }
+                            const barWidth = context.chart.scales.x.getPixelForTick(context.dataIndex + 1) - 
+                                             context.chart.scales.x.getPixelForTick(context.dataIndex);
+                            return barWidth > 30 ? 12 : Math.max(8, barWidth * 0.4); // Adjust size dynamically
+                        },
+                        weight: 'bold'
                     },
                     rotation: (context) => {
-                        const barWidth = context.chart.width / context.chart.data.labels.length;
-                        return barWidth > 30 ? 0 : 90; // Rotate 90 degrees if bar is narrow
+                        const barWidth = context.chart.scales.x.getPixelForTick(context.dataIndex + 1) - 
+                                         context.chart.scales.x.getPixelForTick(context.dataIndex);
+                        return barWidth > 30 ? 0 : 90; // Rotate 90 degrees if bar width is too small
                     },
                     formatter: (value) => value.toFixed(2)
                 }
