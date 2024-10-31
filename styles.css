@@ -1,45 +1,21 @@
-:root {
-  --primary-color: #3498db;
-  --secondary-color: #2ecc71;
-  --background-color: #f4f6f9;
-  --text-color: #2c3e50;
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f4f4f9;
 }
 
-body {
-  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.6;
+.container {
+  width: 80%;
+  max-width: 800px;
 }
 
 .filter-container {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.filter-container:hover {
-  transform: translateY(-5px);
-}
-
-select, input[type="date"] {
-  border-radius: 4px;
-  border-color: var(--primary-color);
-  transition: all 0.3s ease;
-}
-
-select:focus, input[type="date"]:focus {
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.25);
-}
-
-#ahtChart {
-  max-height: 500px;
-}
-
-@media (max-width: 768px) {
-  .filter-container .row {
-      flex-direction: column;
-  }
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
