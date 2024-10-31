@@ -11,6 +11,7 @@
 <body>
     <div class="container">
         <div class="filter-container">
+            <!-- Dimension and Value Filters -->
             <label for="dimensionFilter">Dimension Filter:</label>
             <select id="dimensionFilter">
                 <option value="">Select Dimension</option>
@@ -25,6 +26,12 @@
 
             <label for="valueFilter" id="valueFilterLabel" style="display:none;">Value Filter:</label>
             <select id="valueFilter" style="display:none;"></select>
+
+            <!-- Date Range Filters -->
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">Until:</label>
+            <input type="date" id="endDate">
         </div>
         <canvas id="ahtChart"></canvas>
     </div>

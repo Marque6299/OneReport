@@ -1,13 +1,24 @@
 let chart;
 let originalData;
 
+// Get the first and last date of the current month
+function getDefaultDateRange() {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return { startDate: firstDay.toISOString().split('T')[0], endDate: lastDay.toISOString().split('T')[0] };
+}
+
 // Fetch data from external JSON file
 fetch('https://marque6299.github.io/OneReport/Raw_One_Report_Data.json')
     .then(response => response.json())
     .then(data => {
         originalData = data.raw;
         setupFilters();
-        updateChart(originalData); // Initial chart display
+        const { startDate, endDate } = getDefaultDateRange();
+        document.getElementById('startDate').value = startDate;
+        document.getElementById('endDate').value = endDate;
+        updateChart(filterDataByDateRange(originalData, startDate, endDate)); // Initial chart display
     })
     .catch(error => console.error('Error fetching the JSON data:', error));
 
@@ -16,12 +27,15 @@ function setupFilters() {
     const dimensionFilter = document.getElementById('dimensionFilter');
     const valueFilter = document.getElementById('valueFilter');
     const valueFilterLabel = document.getElementById('valueFilterLabel');
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
 
+    // Event listener for primary dimension filter
     dimensionFilter.addEventListener('change', function() {
         const selectedDimension = this.value;
 
         if (selectedDimension) {
-            // Populate secondary filter based on selected dimension and sort values
+            // Populate and sort secondary filter values
             const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))].sort();
             valueFilter.innerHTML = `<option value="">Select ${selectedDimension}</option>`;
             uniqueValues.forEach(value => {
@@ -39,21 +53,42 @@ function setupFilters() {
 
         // Reset secondary filter selection and update chart
         valueFilter.value = "";
-        updateChart(originalData);
+        applyFilters();
     });
 
-    valueFilter.addEventListener('change', function() {
-        const selectedDimension = dimensionFilter.value;
-        const selectedValue = this.value;
+    // Event listener for value filter
+    valueFilter.addEventListener('change', applyFilters);
 
-        if (selectedDimension && selectedValue) {
-            // Filter data based on selected dimension and value
-            const filteredData = originalData.filter(item => item[selectedDimension] === selectedValue);
-            updateChart(filteredData);
-        } else {
-            // Reset to original data if no value is selected
-            updateChart(originalData);
-        }
+    // Event listeners for date range filters
+    startDateInput.addEventListener('change', applyFilters);
+    endDateInput.addEventListener('change', applyFilters);
+}
+
+// Apply all filters and update the chart
+function applyFilters() {
+    const dimensionFilter = document.getElementById('dimensionFilter').value;
+    const valueFilter = document.getElementById('valueFilter').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    let filteredData = originalData;
+
+    // Filter by dimension and value
+    if (dimensionFilter && valueFilter) {
+        filteredData = filteredData.filter(item => item[dimensionFilter] === valueFilter);
+    }
+
+    // Filter by date range
+    filteredData = filterDataByDateRange(filteredData, startDate, endDate);
+
+    updateChart(filteredData);
+}
+
+// Filter data by selected date range
+function filterDataByDateRange(data, startDate, endDate) {
+    return data.filter(item => {
+        const itemDate = new Date((item.Date - 25569) * 86400 * 1000).toISOString().slice(0, 10);
+        return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
     });
 }
 
@@ -102,7 +137,7 @@ function updateChart(data) {
                     font: {
                         weight: 'bold'
                     },
-                    formatter: (value) => value.toFixed(0)
+                    formatter: (value) => value.toFixed(2)
                 }
             },
             scales: {
@@ -120,6 +155,6 @@ function updateChart(data) {
                 }
             }
         },
-        plugins: [ChartDataLabels] // Initialize ChartDataLabels
+        plugins: [ChartDataLabels] // Initialize ChartDataLabels plugin
     });
 }
