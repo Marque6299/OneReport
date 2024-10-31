@@ -1,3 +1,4 @@
+let chart;
 let originalData;
 
 // Get the first and last date of the current month
@@ -36,9 +37,9 @@ function setupFilters() {
         if (selectedDimension) {
             // Populate and sort secondary filter values
             const uniqueValues = [...new Set(originalData.map(item => item[selectedDimension]))].sort();
-            valueFilter.innerHTML = <option value="">Select ${selectedDimension}</option>;
+            valueFilter.innerHTML = `<option value="">Select ${selectedDimension}</option>`;
             uniqueValues.forEach(value => {
-                valueFilter.innerHTML += <option value="${value}">${value}</option>;
+                valueFilter.innerHTML += `<option value="${value}">${value}</option>`;
             });
 
             // Show secondary filter
